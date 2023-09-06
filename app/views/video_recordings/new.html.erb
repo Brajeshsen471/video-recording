@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Recording with Voice Recognition</title>
+  <!-- Add your CSS and other meta tags here -->
+</head>
+<body>
+  <div class="row abc">
+    <div class="col-md-6 script-container">
+      <h2>Please Answer The Below Question By Reading The Script</h2>
+        <p id="script-1">My name is 'your name eg. John'</p>
+        <p id="script-2">My phone number is 'your phone number eg. 9876543210'</p>
+        <p id="script-3">I am from eg. Varanasi, Uttar Pradesh</p>
+    </div>
+    <div class="col-md-6">
+      <h1 id="heading">Record a new video</h1>
+      <div class="video-call">
+        <video id="live" class="video-one" autoplay muted></video>
+
+        <div class="button">
+          <!-- Combine the start button for recording and recognition -->
+          <button id="start" class="btn btn-lg btn-primary">Start Recording & Recognition</button>
+          <!-- Combine the stop button for stop recording and recognition -->
+          <button id="stop" class="btn btn-lg btn-danger">Stop Recording</button>
+          <a href="/" class="btn btn-lg btn-warning">Click to Next</a>
+        </div>
+
+<!--        <div class="xyz">-->
+<!--          <video id="playback" class="video-two" controls></video>-->
+<!--        </div>-->
+      </div>
+    </div>
+  </div>
+<script charset="utf-8">
+    $(document).ready(function () {
+        $('#script-1').css('color', 'red');
+        $('#script-2').css('visibility', 'hidden');
+        $('#script-3').css('visibility', 'hidden');
+
+        setTimeout(function() {
+            $('#script-2').css('visibility', 'visible')
+                          .css('color', 'red');
+        }, 5000); // Apply the CSS change after 5 seconds
+
+        setTimeout(function() {
+            $('#script-3').css('visibility', 'visible')
+                          .css('color', 'red');
+        }, 10000);
+    });
+    (async () => {
+        const startBtn = document.querySelector('#start');
+        const stopBtn = document.querySelector('#stop');
+        const liveVideo = document.querySelector('#live');
+        const playbackVideo = document.querySelector('#playback');
+        const script1Element = document.querySelector('#script-1');
+        const script2Element = document.querySelector('#script-2');
+        const script3Element = document.querySelector('#script-3');
+
+        const script1Text = $('#script-1').html().split("'")[0];
+        const script2Text = $('#script-2').html().split("'")[0];
+        const script3Text = $('#script-3').html().split("'")[0];
+
+
+
+        let recorder;
+        const chunks = [];
+
+        let recognition;
+
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        let recognizedText = '';
+
+        recognition.onresult = (event) => {
+            recognizedText = '';
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    recognizedText += event.results[i][0].transcript;
+                }
+            }
+        };
+
+        // Function to calculate the Levenshtein distance between two strings
+        function levenshteinDistance(str1, str2) {
+            const m = str1.length;
+            const n = str2.length;
+            const dp = new Array(m + 1).fill(null).map(() => new Array(n + 1).fill(0));
+
+            for (let i = 0; i <= m; i++) {
+                for (let j = 0; j <= n; j++) {
+                    if (i === 0) {
+                        dp[i][j] = j;
+                    } else if (j === 0) {
+                        dp[i][j] = i;
+                    } else {
+                        dp[i][j] = Math.min(
+                          dp[i - 1][j - 1] + (str1[i - 1] !== str2[j - 1] ? 1 : 0),
+                          dp[i - 1][j] + 1,
+                          dp[i][j - 1] + 1
+                        );
+                    }
+                }
+            }
+
+            return dp[m][n];
+        }
+
+        // Function to calculate text similarity percentage
+            function calculateSimilarity(generatedText, scriptText) {
+                generatedText = generatedText.toLowerCase();
+                scriptText = scriptText.toLowerCase();
+                generatedText = generatedText.substring(0,scriptText.length-1);
+                console.log("converated text");
+                console.log(generatedText);
+                console.log(scriptText);
+                let count = 0;
+                const scriptArr = scriptText.split(' ');
+                const generatedArr = generatedText.split(' ');
+                for (let i = 0; i < scriptArr.length - 1; i++) {
+                    if (scriptArr[i] == generatedArr[i]) {
+                        count++;
+                    }
+                }
+                return ((count / (scriptArr.length - 1)) * 100);
+        }
+
+        recognition.onend = () => {
+            const recognizedTextElement = document.createElement('p');
+            recognizedTextElement.textContent = recognizedText;
+            document.body.appendChild(recognizedTextElement);
+            // Compare the recognized text with the text script
+            console.log("text by system", recognizedText);
+            console.log("script text", script1Text);
+            console.log("script text", script2Text);
+            console.log("script text", script3Text);
+            const similarityPercentage = calculateSimilarity(recognizedText, script1Text);
+
+            if (similarityPercentage >= 80) {
+                alert('Matched with text script!');
+
+                $('#script-1').css('color', 'green');
+                $('#script-2').css('color', 'green');
+                $('#script-3').css('color', 'green');
+
+            } else {
+
+                alert('Not matched with text script.');
+            }
+
+            console.log('Recognized Text:', recognizedText);
+            localStorage.setItem("recognizedText", recognizedText);
+        };
+
+        startBtn.addEventListener('click', async function(e) {
+            e.preventDefault();
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+                liveVideo.srcObject = stream;
+                if (recorder && recorder.state === 'recording') {
+                    recorder.stop();
+                    recognition.stop();
+                } else {
+                    // Start recording and recognition
+                    recorder = new MediaRecorder(stream);
+                    recorder.ondataavailable = (e) => {
+                        chunks.push(e.data);
+                    };
+                    recorder.start();
+                    recognition.start();
+                }
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+            }
+        });
+
+        stopBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (recorder && recorder.state === 'recording') {
+                recorder.stop();
+                recognition.stop();
+
+                recorder.onstop = () => {
+                    const recordedBlob = new Blob(chunks, { type: 'video/webm' });
+
+                    const reader = new FileReader();
+                    reader.onload = function() {
+                        const base64Video = reader.result.split(',')[1];
+
+                        localStorage.setItem("recordedVideoBase64", base64Video);
+
+                        playbackVideo.src = window.URL.createObjectURL(recordedBlob);
+                        playbackVideo.play();
+                    };
+                    reader.readAsDataURL(recordedBlob);
+                };
+            }
+        });
+    })();
+</script>
+</body>
+</html>

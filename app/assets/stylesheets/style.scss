@@ -1,0 +1,104 @@
+
+.abc{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: lightgoldenrodyellow;
+  height: 100vh;
+  width: 100%;
+  position: fixed;
+}
+.video-call {
+  text-align: center;
+  height: 700px;
+  width: 100%;
+}
+.video-one {
+  align-content: center;
+  height: 600px;
+  width: 600px;
+  margin-top: 5px;
+  border: 2px solid green;
+  border-radius: 20px;
+}
+.button{
+  text-align: center;
+  margin-top: 17px;
+  padding-bottom: 20px;
+}
+#heading{
+  font-family: system-ui;
+  text-align: center;
+  margin-top: 50px;
+}
+.btn-success{
+  margin-right: 5px;
+}
+
+.speak-text{
+border: 2px solid red;
+  height: 400px;
+  width: 400px;
+  top: 150px;
+  position: fixed;
+  right: 100px;
+  border-radius: 20px;
+}
+
+.video-two{
+  margin: 5px;
+  height: 200px;
+  width: 400px;
+  border: 2px solid red;
+  position: fixed;
+  top: 60%;
+  right: 100px;
+}
+.display-text{
+  height: 200px;
+  width: 200px;
+  text-align: right;
+  border: 2px solid red;
+  background-color: lemonchiffon;
+  border-radius: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  position: fixed;
+  top: 105px;
+  right: 600px;
+  background: #336600;
+  padding: 6px;
+  color: #fff;
+  font-size: 1.4em;
+  height: 550px;
+  width: 550px;
+}
+.video-player{
+  border: 2px solid red;
+  height: 550px;
+  width: 550px;
+  position: fixed;
+  left: 150px;
+  border-radius: 20px;
+  margin-top: 15px;
+}
+.audio-player{
+  margin-top: 33%;
+  text-align: center;
+}
+#heading-two{
+  margin-bottom: 20px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.script-container {
+  margin: auto;
+  width: fit-content;
+  margin-top: 5%;
+  font-family: cursive;
+  font-size: 3rem;
+}
+.script-container h2{
+  font-family: system-ui;
+  color: lightslategrey;
+}

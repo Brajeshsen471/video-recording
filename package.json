@@ -1,0 +1,8 @@
+{
+  "name": "Record_video_app",
+  "version": "1.0.0",
+  "dependencies": {
+    "face-api.js": "^0.22.2",
+    "jquery": "^3.7.1"
+  }
+}

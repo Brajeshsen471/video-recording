@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Playback and Voice Recognition</title>
+</head>
+<body>
+<h1 id="heading-two">Video Playback and Voice Recognition</h1>
+<div>
+    <video id="playback" class="video-player" controls></video>
+</div>
+<div id="recognizedText" class="display-text">
+</div> <!-- Add a div to display recognized text -->
+
+<div class="audio-player">
+  <audio id="audioPlayback"  controls></audio>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const playbackVideo = document.querySelector("#playback");
+        const recordedVideoBase64 = localStorage.getItem("recordedVideoBase64");
+
+        if (recordedVideoBase64) {
+            playbackVideo.src = `data:video/webm;base64,${recordedVideoBase64}`;
+            playbackVideo.play();
+
+            const recognizedText = localStorage.getItem("recognizedText"); // Get recognized text from local storage
+
+            // Display recognized text in the 'recognizedText' div
+            const recognizedTextDiv = document.getElementById("recognizedText");
+            recognizedTextDiv.textContent = recognizedText || "No recognized text available.";
+
+            audioPlayback.src = `data:audio/webm;base64,${recordedVideoBase64}`;
+            audioPlayback.play();
+        }
+    });
+</script>
+</body>
+</html>
